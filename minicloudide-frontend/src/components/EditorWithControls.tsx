@@ -2,6 +2,30 @@ import React, { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import axios from "axios";
 
+const examples: Record<string, string> = {
+  python: `nums = []
+
+for i in range(5):
+    for j in range(5):
+        nums.append(i+j)
+
+print(nums)`,
+  csharp: `using System.Collections.Generic;
+
+List<int> list = new List<int>();
+
+for (int i = 0; i < 5; i++)
+{
+    for (int j = 0; j < 5; j++)
+    {
+        list.Add(i + j);
+    }
+}
+
+string result = string.Join(", ", list);
+result`
+};
+
 const EditorWithControls: React.FC = () => {
   const [language, setLanguage] = useState<string>("python");
   const [theme, setTheme] = useState<string>("vs-dark");
@@ -96,6 +120,7 @@ const EditorWithControls: React.FC = () => {
         {/* Run button */}
         <button onClick={runCode}>Run (F5)</button>
         <button onClick={saveScript}>Save</button>
+        <button onClick={() => setCode(examples[language])}>Load Example</button>
       </div>
 
       {/* Editor */}
