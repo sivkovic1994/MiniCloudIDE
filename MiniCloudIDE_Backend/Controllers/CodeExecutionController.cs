@@ -54,6 +54,17 @@ namespace MiniCloudIDE_Backend.Controllers
             return Ok(history);
         }
 
+        [HttpGet("script/{id}")]
+        public async Task<IActionResult> GetScriptById(int id)
+        {
+            var script = await _historyService.GetScriptById(id);
+
+            if (script == null)
+                return NotFound(new { error = "Script not found" });
+
+            return Ok(script);
+        }
+
         #endregion
 
         #region Helpers

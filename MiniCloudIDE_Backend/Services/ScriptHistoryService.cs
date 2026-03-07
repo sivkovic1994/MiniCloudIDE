@@ -31,7 +31,15 @@ namespace MiniCloudIDE_Backend.Services
         {
             return await _context.ScriptHistories
                 .Where(h => h.Language == language)
+                .OrderByDescending(h => h.CreatedAt)
+                .Take(10)
                 .ToListAsync();
+        }
+
+        public async Task<ScriptHistory?> GetScriptById(int id)
+        {
+            return await _context.ScriptHistories
+                .FirstOrDefaultAsync(h => h.Id == id);
         }
     }
 }

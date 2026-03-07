@@ -6,13 +6,20 @@ const EditorWithControls: React.FC = () => {
   const [language, setLanguage] = useState<string>("python");
   const [theme, setTheme] = useState<string>("vs-dark");
   const [code, setCode] = useState<string>("print(\"Hello World\")");
-  const [history, setHistory] = useState<string[]>([]);
+  const [history, setHistory] = useState<Script[]>([]);
   const [output, setOutput] = useState<string>("");
+
+  interface Script {
+    id: number;
+    code: string;
+    createdAt: string;
+    language: string;
+  }
 
   const runCode = async () => {
     try {
       const res = await axios.post("/CodeExecution", {
-        language: language === "python" ? "Python" :"C#",
+        language: language === "python" ? "Python" : "C#",
         code: code
       });
       setOutput(res.data.output || "");
@@ -22,17 +29,25 @@ const EditorWithControls: React.FC = () => {
   };
 
   const saveScript = async () => {
-  try {
-    const res = await axios.post("/CodeExecution/save", {
-      language: language === "csharp" ? "C#" : "Python",
-      code: code
-    });
+    if (!code.trim()) return;
+    try {
+      const lang = language === "csharp" ? "C#" : "Python";
+      const res = await axios.post("/CodeExecution/save", { language: lang, code });
+      setHistory(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-    setHistory(res.data);
-  } catch (err) {
-    console.error(err);
-  }
-};
+  const loadHistory = async () => {
+    try {
+      const lang = language === "csharp" ? "C#" : "Python";
+      const res = await axios.get(`/CodeExecution/history/${encodeURIComponent(lang)}`);
+      setHistory(res.data);
+    } catch (err) {
+      console.error("Failed to load history", err);
+    }
+  };
 
   // Add F5 shortcut to run code
   useEffect(() => {
@@ -46,15 +61,20 @@ const EditorWithControls: React.FC = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [code, language]);
 
-  // Clear code and history when language changes
+  // Load history on mount
+  useEffect(() => {
+    loadHistory();
+  }, []);
+
+  // Clear code, load history on mount or reload history when language changes
   useEffect(() => {
     setCode("");
-    setHistory([]);
+    loadHistory();
   }, [language]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", padding: "10px" }}>
-      
+
       {/* Controls */}
       <div style={{ marginBottom: "10px", display: "flex", gap: "10px", alignItems: "center" }}>
         <label>
@@ -102,13 +122,20 @@ const EditorWithControls: React.FC = () => {
       {/* History */}
       <div style={{ marginTop: "10px" }}>
         <h3>History</h3>
-        {history.map((script, index) => (
-          <div key={index}>
-            <button onClick={() => setCode(script)}>
-              Load script {index + 1}
-            </button>
-          </div>
-        ))}
+        {history.length === 0 ? (
+          <p>No scripts saved yet.</p>
+        ) : (
+          history.map((script) => (
+            <div key={script.id} style={{ marginBottom: "5px" }}>
+              <button
+                onClick={() => setCode(script.code)}
+                style={{ padding: "5px 10px", cursor: "pointer" }}
+              >
+                {new Date(script.createdAt).toLocaleString()} — Load
+              </button>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
