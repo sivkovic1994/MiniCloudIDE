@@ -52,9 +52,18 @@ namespace MiniCloudIDE_Backend.Services
                 var responseBytes = await ReadExactAsync(stream, responseLength, cts.Token);
 
                 var responseJson = Encoding.UTF8.GetString(responseBytes);
-                var result = JsonSerializer.Deserialize<PythonResult>(responseJson);
 
-                return (result?.Output ?? "", result?.Errors ?? "");
+                var result = JsonSerializer.Deserialize<PythonResult>(responseJson, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                var finalOutput = result?.Output ?? "";
+                var finalErrors = result?.Errors ?? "";
+
+                _logger.LogInformation("=== Returning output: '{Output}', errors: '{Errors}' ===", finalOutput, finalErrors);
+
+                return (finalOutput, finalErrors);
             }
             catch (OperationCanceledException)
             {
@@ -79,7 +88,7 @@ namespace MiniCloudIDE_Backend.Services
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            _semaphore?.Dispose();
         }
 
         #endregion

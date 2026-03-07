@@ -2,7 +2,6 @@
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using MiniCloudIDE_Backend.Services;
-using System.Diagnostics;
 
 namespace MiniCloudIDE_Backend.Controllers
 {
@@ -11,10 +10,12 @@ namespace MiniCloudIDE_Backend.Controllers
     public class CodeExecutionController : ControllerBase
     {
         private readonly IScriptHistoryService _historyService;
+        private readonly IPythonExecutionService _pythonExecutionService;
 
-        public CodeExecutionController(IScriptHistoryService historyService)
+        public CodeExecutionController(IScriptHistoryService historyService, IPythonExecutionService pythonExecutionService)
         {
             _historyService = historyService;
+            _pythonExecutionService = pythonExecutionService;
         }
 
         #region Public Methods
@@ -30,7 +31,7 @@ namespace MiniCloudIDE_Backend.Controllers
                 case "c#":
                     return await RunCSharp(request.Code);
                 case "python":
-                    return RunPython(request.Code);
+                    return await RunPython(request.Code);
                 default:
                     return BadRequest(new { error = "Unsupported language" });
             }
@@ -77,32 +78,12 @@ namespace MiniCloudIDE_Backend.Controllers
             }
         }
 
-        private IActionResult RunPython(string code)
+        private async Task<IActionResult> RunPython(string code)
         {
             try
             {
-                // Execute Python code by starting an external process.
-                // Python must be installed and available in the system PATH.
-                // Unlike C#, Python does not have a built-in .NET interpreter.
-                var psi = new ProcessStartInfo
-                {
-                    FileName = "python",  // interpreter to run the code
-                    Arguments = $"-c \"{code.Replace("\"", "\\\"")}\"",
-                    RedirectStandardOutput = true, 
-                    RedirectStandardError = true,  
-                    UseShellExecute = false,       
-                    CreateNoWindow = true          
-                };
-
-                using var process = Process.Start(psi);
-                if (process == null)
-                {
-                    return Ok(new { output = "", errors = "Failed to start Python process." });
-                }
-                process.WaitForExit(5000);
-
-                string output = process.StandardOutput.ReadToEnd();
-                string errors = process.StandardError.ReadToEnd();
+                // Execute Python code via PythonWorkerHostedService (TCP socket communication)
+                var (output, errors) = await _pythonExecutionService.ExecuteAsync(code);
 
                 return Ok(new { output, errors });
             }
