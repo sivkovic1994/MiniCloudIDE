@@ -14,6 +14,8 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddScoped<IScriptHistoryService, ScriptHistoryService>();
+builder.Services.AddSingleton<IPythonExecutionService, PythonExecutionService>();
+builder.Services.AddHostedService<PythonWorkerHostedService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
