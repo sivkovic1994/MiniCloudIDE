@@ -90,9 +90,10 @@ const EditorWithControls: React.FC = () => {
     loadHistory();
   }, []);
 
-  // Clear code, load history on mount or reload history when language changes
+  // Clear code, output, and reload history when language changes
   useEffect(() => {
     setCode("");
+    setOutput("");
     loadHistory();
   }, [language]);
 
