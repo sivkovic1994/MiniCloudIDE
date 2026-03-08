@@ -104,7 +104,12 @@ namespace MiniCloudIDE_Backend.Controllers
             catch (CompilationErrorException ex)
             {
                 stopwatch.Stop();
-                return Ok(new { output = string.Join("\n", ex.Diagnostics), executionTimeMs = stopwatch.Elapsed.TotalMilliseconds });
+                return Ok(new { output = "", errors = string.Join("\n", ex.Diagnostics), executionTimeMs = stopwatch.Elapsed.TotalMilliseconds });
+            }
+            catch (Exception ex)
+            {
+                stopwatch.Stop();
+                return Ok(new { output = "", errors = ex.Message, executionTimeMs = stopwatch.Elapsed.TotalMilliseconds });
             }
         }
 

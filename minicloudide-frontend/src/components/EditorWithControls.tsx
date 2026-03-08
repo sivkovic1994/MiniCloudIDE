@@ -34,6 +34,8 @@ const EditorWithControls: React.FC = () => {
   const [code, setCode] = useState<string>("print(\"Hello World\")");
   const [history, setHistory] = useState<Script[]>([]);
   const [output, setOutput] = useState<string>("");
+  const [errors, setErrors] = useState<string>("");
+  const [execTime, setExecTime] = useState<number | null>(null);
 
   // useRef is used here to store a persistent cache of history per language.
   // This way, the cache survives component re-renders without causing extra renders.
@@ -52,11 +54,13 @@ const EditorWithControls: React.FC = () => {
         language: language === "python" ? "Python" : "C#",
         code: code
       });
-      const time = res.data.executionTimeMs;
-      const out = res.data.output || "";
-      setOutput(time != null ? `${out}\n\n⏱ Execution time: ${time}ms` : out);
+      setOutput(res.data.output || "");
+      setErrors(res.data.errors || "");
+      setExecTime(res.data.executionTimeMs ?? null);
     } catch (err) {
-      setOutput(`Error running code: ${err}`);
+      setOutput("");
+      setErrors(`Error running code: ${err}`);
+      setExecTime(null);
     }
   };
 
@@ -109,12 +113,16 @@ const EditorWithControls: React.FC = () => {
   // Clear output when user logs in or out
   useEffect(() => {
     setOutput("");
+    setErrors("");
+    setExecTime(null);
   }, [user]);
 
   // Clear code, output, and reload history when language changes
   useEffect(() => {
     setCode("");
     setOutput("");
+    setErrors("");
+    setExecTime(null);
     if (user) loadHistory();
   }, [language]);
 
@@ -175,9 +183,9 @@ const EditorWithControls: React.FC = () => {
       </div>
 
       {/* Output */}
-      <pre style={{ marginTop: "10px", background: "#f0f0f0", padding: "10px", minHeight: "100px" }}>
-        {output}
-      </pre>
+      <pre style={{ marginTop: "10px", background: "#f0f0f0", padding: "10px", minHeight: "100px" }}>{errors ? (
+          <span style={{ color: "#d32f2f" }}>{errors}</span>
+        ) : output?.replace(/\n+$/, "")}{execTime != null && `\n\n⏱ Execution time: ${execTime}ms`}</pre>
 
       {/* History (only for logged in users) */}
       {user && (
