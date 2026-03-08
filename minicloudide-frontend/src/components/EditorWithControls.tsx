@@ -52,7 +52,9 @@ const EditorWithControls: React.FC = () => {
         language: language === "python" ? "Python" : "C#",
         code: code
       });
-      setOutput(res.data.output || "");
+      const time = res.data.executionTimeMs;
+      const out = res.data.output || "";
+      setOutput(time != null ? `${out}\n\n⏱ Execution time: ${time}ms` : out);
     } catch (err) {
       setOutput(`Error running code: ${err}`);
     }

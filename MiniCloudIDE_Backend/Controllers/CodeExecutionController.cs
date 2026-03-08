@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using MiniCloudIDE_Backend.Services;
+using System.Diagnostics;
 using System.Security.Claims;
 
 namespace MiniCloudIDE_Backend.Controllers
@@ -25,7 +26,7 @@ namespace MiniCloudIDE_Backend.Controllers
         public async Task<IActionResult> Run([FromBody] CodeRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.Code))
-                return Ok(new { output = "No code entered" });
+                return Ok(new { output = "No code entered", executionTimeMs = 0 });
 
             switch (request.Language.ToLower())
             {
@@ -84,6 +85,8 @@ namespace MiniCloudIDE_Backend.Controllers
 
         private async Task<IActionResult> RunCSharp(string code)
         {
+            var stopwatch = Stopwatch.StartNew();
+
             try
             {
                 // Configure Roslyn scripting environment with basic imports and references.
@@ -94,26 +97,34 @@ namespace MiniCloudIDE_Backend.Controllers
                 // Run C# code in-memory with Roslyn (no external process).
                 var result = await CSharpScript.EvaluateAsync(code, scriptOptions);
 
-                return Ok(new { output = result?.ToString() ?? "null" });
+                stopwatch.Stop();
+
+                return Ok(new { output = result?.ToString() ?? "null", executionTimeMs = stopwatch.Elapsed.TotalMilliseconds });
             }
             catch (CompilationErrorException ex)
             {
-                return Ok(new { output = string.Join("\n", ex.Diagnostics) });
+                stopwatch.Stop();
+                return Ok(new { output = string.Join("\n", ex.Diagnostics), executionTimeMs = stopwatch.Elapsed.TotalMilliseconds });
             }
         }
 
         private async Task<IActionResult> RunPython(string code)
         {
+            var stopwatch = Stopwatch.StartNew();
+
             try
             {
                 // Execute Python code via PythonWorkerHostedService (TCP socket communication)
                 var (output, errors) = await _pythonExecutionService.ExecuteAsync(code);
 
-                return Ok(new { output, errors });
+                stopwatch.Stop();
+
+                return Ok(new { output, errors, executionTimeMs = stopwatch.Elapsed.TotalMilliseconds });
             }
             catch (Exception ex)
             {
-                return Ok(new { output = "", errors = ex.Message });
+                stopwatch.Stop();
+                return Ok(new { output = "", errors = ex.Message, executionTimeMs = stopwatch.Elapsed.TotalMilliseconds });
             }
         }
 
