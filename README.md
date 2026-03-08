@@ -110,9 +110,11 @@ The backend launches `worker.py` as a background process. Communication happens 
 
 ```
 CloudIDE/
-├── worker.py                        # Python TCP worker for code execution
+├── docker-compose.yml               # Runs everything with one command
 ├── MiniCloudIDE_Backend/
+│   ├── Dockerfile                   # Backend Docker image
 │   ├── Program.cs                   # Server configuration (CORS, JWT, DI)
+│   ├── worker.py                    # Python TCP worker for code execution
 │   ├── Controllers/
 │   │   ├── AuthController.cs        # Register, login, /me
 │   │   └── CodeExecutionController.cs  # Code execution and history
@@ -128,6 +130,8 @@ CloudIDE/
 │   │   └── ScriptHistoryService.cs       # CRUD operations for script history
 │   └── Migrations/                  # EF Core migrations
 └── minicloudide-frontend/
+    ├── Dockerfile                   # Frontend Docker image
+    ├── nginx.conf                   # Nginx config (serves app + proxies API)
     ├── package.json
     └── src/
         ├── App.tsx                  # Main entry point
@@ -142,13 +146,27 @@ CloudIDE/
 
 ## Getting Started
 
-### Prerequisites
+### Docker (recommended)
+
+The easiest way to run the project — no need to install .NET, Node.js, Python or PostgreSQL manually.
+
+**Prerequisites:** [Docker](https://www.docker.com/get-started)
+
+```bash
+docker-compose up --build
+```
+
+The application is available at `http://localhost:3000`.
+
+### Manual Setup
+
+#### Prerequisites
 - [.NET 9 SDK](https://dotnet.microsoft.com/download)
 - [Node.js](https://nodejs.org/) (v18+)
 - [Python 3](https://www.python.org/downloads/)
 - [PostgreSQL](https://www.postgresql.org/download/)
 
-### 1. Database
+#### 1. Database
 
 Create a PostgreSQL database called `minicloudide`, configure the connection string in `appsettings.json`, then apply migrations:
 
@@ -157,7 +175,7 @@ cd MiniCloudIDE_Backend
 dotnet ef database update
 ```
 
-### 2. Backend
+#### 2. Backend
 
 ```bash
 cd MiniCloudIDE_Backend
@@ -166,7 +184,7 @@ dotnet run
 
 The backend will automatically start the `worker.py` process.
 
-### 3. Frontend
+#### 3. Frontend
 
 ```bash
 cd minicloudide-frontend

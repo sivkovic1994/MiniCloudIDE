@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: minicloudide
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build:
+      context: ./MiniCloudIDE_Backend
+      dockerfile: Dockerfile
+    environment:
+      ConnectionStrings__Postgres: "Host=db;Port=5432;Database=minicloudide;Username=postgres;Password=postgres"
+      Jwt__Secret: "YourSuperSecretKeyThatIsAtLeast32CharactersLong!"
+      Jwt__Issuer: "MiniCloudIDE"
+      Jwt__Audience: "MiniCloudIDE-Users"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./minicloudide-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

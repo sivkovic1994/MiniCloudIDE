@@ -21,7 +21,7 @@ namespace MiniCloudIDE_Backend.Services
 
             try
             {
-                string workerPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "worker.py");
+                string workerPath = Path.Combine(Directory.GetCurrentDirectory(), "worker.py");
 
                 if (!File.Exists(workerPath))
                 {
