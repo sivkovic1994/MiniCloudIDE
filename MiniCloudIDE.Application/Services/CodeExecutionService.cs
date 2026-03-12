@@ -4,7 +4,7 @@ using MiniCloudIDE.Application.DTOs;
 using MiniCloudIDE.Application.Interfaces;
 using System.Diagnostics;
 
-namespace MiniCloudIDE.Infrastructure.Services
+namespace MiniCloudIDE.Application.Services
 {
     public class CodeExecutionService : ICodeExecutionService
     {
@@ -37,7 +37,6 @@ namespace MiniCloudIDE.Infrastructure.Services
                 var scriptOptions = ScriptOptions.Default
                     .WithImports("System")
                     .WithReferences(typeof(object).Assembly);
-
                 var result = await CSharpScript.EvaluateAsync(code, scriptOptions);
                 stopwatch.Stop();
 

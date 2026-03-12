@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MiniCloudIDE.Application.Interfaces;
 using MiniCloudIDE.Infrastructure.Data;
 using MiniCloudIDE.Infrastructure.Services;
+using MiniCloudIDE.Application.Services;
 
 namespace MiniCloudIDE.Infrastructure
 {
