@@ -15,6 +15,8 @@ namespace MiniCloudIDE.Infrastructure
                 options.UseNpgsql(configuration.GetConnectionString("Postgres")));
 
             services.AddScoped<IScriptHistoryService, ScriptHistoryService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ICodeExecutionService, CodeExecutionService>();
             services.AddSingleton<IPythonExecutionService, PythonExecutionService>();
             services.AddHostedService<PythonWorkerHostedService>();
 
