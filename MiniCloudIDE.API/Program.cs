@@ -6,6 +6,7 @@ using MiniCloudIDE.Infrastructure;
 using MiniCloudIDE.Infrastructure.Data;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using MiniCloudIDE.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +56,10 @@ builder.Services.AddAuthentication(options =>
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!))
     };
 });
+
+// Global error handler middleware catches all unhandled exceptions, logs them, and returns a consistent JSON error response to the client.
+// Add this middleware at the start of the pipeline to ensure all errors are handled in one place.
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 var app = builder.Build();
 

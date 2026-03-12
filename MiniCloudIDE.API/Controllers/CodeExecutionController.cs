@@ -21,15 +21,8 @@ namespace MiniCloudIDE.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Run([FromBody] CodeRequest request)
         {
-            try
-            {
-                var result = await _codeExecutionService.ExecuteAsync(request.Language, request.Code);
-                return Ok(result);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
+            var result = await _codeExecutionService.ExecuteAsync(request.Language, request.Code);
+            return Ok(result);
         }
 
         [HttpPost("save")]
