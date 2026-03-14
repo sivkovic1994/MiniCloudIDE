@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using MiniCloudIDE.Domain.Entities;
 
 namespace MiniCloudIDE.Infrastructure.Data.Configurations
 {

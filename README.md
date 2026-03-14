@@ -123,7 +123,6 @@ MiniCloudIDE/
 │
 ├── MiniCloudIDE.Domain/                  # Domain Layer (no dependencies)
 │   └── Entities/
-│       ├── ApplicationUser.cs            # User model (extends IdentityUser)
 │       └── ScriptHistory.cs              # Model for saved scripts
 │
 ├── MiniCloudIDE.Application/             # Application Layer (depends on Domain)
@@ -143,6 +142,7 @@ MiniCloudIDE/
 │   ├── DependencyInjection.cs            # DI registration for all infra services
 │   ├── worker.py                         # Python TCP worker for code execution
 │   ├── Data/
+│   │   ├── ApplicationUser.cs            # User model (extends IdentityUser)
 │   │   ├── AppDbContext.cs               # EF Core context (Identity + ScriptHistory)
 │   │   └── Configurations/              # EF Core entity configurations (ApplicationUserConfiguration, ScriptHistoryConfiguration, ...)
 │   ├── Services/

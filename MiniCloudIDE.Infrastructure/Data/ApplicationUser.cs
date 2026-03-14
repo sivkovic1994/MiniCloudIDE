@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace MiniCloudIDE.Domain.Entities
+namespace MiniCloudIDE.Infrastructure.Data
 {
     public class ApplicationUser : IdentityUser
     {

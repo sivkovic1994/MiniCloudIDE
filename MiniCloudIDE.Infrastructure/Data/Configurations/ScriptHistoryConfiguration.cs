@@ -24,7 +24,7 @@ namespace MiniCloudIDE.Infrastructure.Data.Configurations
             builder.Property(e => e.UserId)
                 .IsRequired();
 
-            builder.HasOne(e => e.User)
+            builder.HasOne<ApplicationUser>()
                 .WithMany()
                 .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.Cascade);

@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using MiniCloudIDE.Domain.Entities;
+using MiniCloudIDE.API.Middleware;
 using MiniCloudIDE.Infrastructure;
 using MiniCloudIDE.Infrastructure.Data;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
-using MiniCloudIDE.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 

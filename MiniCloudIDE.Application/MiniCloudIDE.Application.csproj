@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.9.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.9.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Scripting" Version="4.9.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MiniCloudIDE.Domain\MiniCloudIDE.Domain.csproj" />
   </ItemGroup>
 
